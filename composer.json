@@ -1,0 +1,23 @@
+{
+  "name": "lengbin/sub-table",
+  "description": "sub table",
+  "type": "library",
+  "keywords": ["php", "extension","common"],
+  "license": "MIT",
+  "require": {
+    "php": ">=7.4",
+    "lengbin/error-code": "2.0.x-dev"
+  },
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Lengbin\\SubDatabase\\": "src"
+    }
+  },
+  "authors": [
+    {
+      "name": "lengbin",
+      "email": "xykxyk2008@163.com"
+    }
+  ]
+}
