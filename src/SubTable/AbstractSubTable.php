@@ -14,7 +14,7 @@ abstract class AbstractSubTable
 
     private string $table;
 
-    private string $tablePrefix;
+    private string $tablePrefix = 't_';
 
     /**
      * @return string
