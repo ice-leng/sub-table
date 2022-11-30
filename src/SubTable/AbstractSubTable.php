@@ -12,6 +12,46 @@ abstract class AbstractSubTable
 
     private string $key;
 
+    private string $table;
+
+    private string $tablePrefix;
+
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    /**
+     * @param string $table
+     * @return AbstractSubTable
+     */
+    public function setTable(string $table): AbstractSubTable
+    {
+        $this->table = $table;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTablePrefix(): string
+    {
+        return $this->tablePrefix;
+    }
+
+    /**
+     * @param string $tablePrefix
+     * @return AbstractSubTable
+     */
+    public function setTablePrefix(string $tablePrefix): AbstractSubTable
+    {
+        $this->tablePrefix = $tablePrefix;
+        return $this;
+    }
+
     /**
      * @return PDO
      */
@@ -50,8 +90,9 @@ abstract class AbstractSubTable
 
     abstract public function suffix(): string;
 
-    public function createSubTable(string $table): bool
+    public function createSubTable(): bool
     {
+        $table = $this->getTablePrefix() . $this->getTable();
         $showTableSql = " show create table {$table}";
         $result = $this->getPdo()->query($showTableSql)->fetch();
         $createTableSql = str_replace($table, "{$table}_{$this->suffix()}", $result['Create Table']);
