@@ -90,6 +90,11 @@ abstract class AbstractSubTable
 
     abstract public function suffix(): string;
 
+    public function getSubTable(): string
+    {
+        return  $this->getTablePrefix() . $this->getTable() . '_' . $this->suffix();
+    }
+
     public function createSubTable(): bool
     {
         $table = $this->getTablePrefix() . $this->getTable();
