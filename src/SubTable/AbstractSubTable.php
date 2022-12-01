@@ -8,8 +8,6 @@ use PDO;
 
 abstract class AbstractSubTable
 {
-    private PDO $pdo;
-
     private string $key;
 
     private string $table;
@@ -53,24 +51,6 @@ abstract class AbstractSubTable
     }
 
     /**
-     * @return PDO
-     */
-    public function getPdo(): PDO
-    {
-        return $this->pdo;
-    }
-
-    /**
-     * @param PDO $pdo
-     * @return self
-     */
-    public function setPdo(PDO $pdo): self
-    {
-        $this->pdo = $pdo;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getKey(): string
@@ -92,16 +72,28 @@ abstract class AbstractSubTable
 
     public function getSubTable(): string
     {
-        return  $this->getTablePrefix() . $this->getTable() . '_' . $this->suffix();
+        return $this->getTablePrefix() . $this->getTable() . '_' . $this->suffix();
     }
 
-    public function createSubTable(): bool
+    public function hasTable(PDO $pdo, string $dbname, string $table): bool
     {
+        $sql = "select * from information_schema.tables where table_schema = '{$dbname}' and table_name = '{$table}'";
+        $result = $pdo->query($sql)->fetchAll();
+        return count($result) > 0;
+    }
+
+    public function createSubTable(PDO $pdo, string $dbname, ?string $subTable = null): bool
+    {
+        $subTable = $subTable ?? $this->getSubTable();
+        if ($this->hasTable($pdo, $dbname, $subTable)) {
+            return false;
+        }
+
         $table = $this->getTablePrefix() . $this->getTable();
-        $showTableSql = " show create table {$table}";
-        $result = $this->getPdo()->query($showTableSql)->fetch();
-        $createTableSql = str_replace($table, "{$table}_{$this->suffix()}", $result['Create Table']);
-        $statement = $this->getPdo()->prepare($createTableSql);
+        $showTableSql = "show create table {$table}";
+        $result = $pdo->query($showTableSql)->fetch();
+        $createTableSql = str_replace($table, $subTable, $result['Create Table']);
+        $statement = $pdo->prepare($createTableSql);
         $statement->execute();
         return true;
     }
