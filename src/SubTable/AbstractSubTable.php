@@ -24,9 +24,9 @@ abstract class AbstractSubTable
 
     /**
      * @param string $table
-     * @return AbstractSubTable
+     * @return self
      */
-    public function setTable(string $table): AbstractSubTable
+    public function setTable(string $table): self
     {
         $this->table = $table;
         return $this;
@@ -42,9 +42,9 @@ abstract class AbstractSubTable
 
     /**
      * @param string $tablePrefix
-     * @return AbstractSubTable
+     * @return self
      */
-    public function setTablePrefix(string $tablePrefix): AbstractSubTable
+    public function setTablePrefix(string $tablePrefix): self
     {
         $this->tablePrefix = $tablePrefix;
         return $this;
@@ -72,7 +72,7 @@ abstract class AbstractSubTable
 
     public function getSubTable(): string
     {
-        return $this->getTablePrefix() . $this->getTable() . '_' . $this->suffix();
+        return $this->getTable() . '_' . $this->suffix();
     }
 
     public function hasTable(PDO $pdo, string $dbname, string $table): bool
@@ -82,9 +82,12 @@ abstract class AbstractSubTable
         return count($result) > 0;
     }
 
-    public function createSubTable(PDO $pdo, string $dbname, ?string $subTable = null): bool
+    public function createSubTable(PDO $pdo, string $dbname, string $subTable): bool
     {
-        $subTable = $subTable ?? $this->getSubTable();
+        if (!str_starts_with($subTable, $this->getTablePrefix())) {
+            $subTable = $this->getTablePrefix() . $subTable;
+        }
+
         if ($this->hasTable($pdo, $dbname, $subTable)) {
             return false;
         }
